@@ -1,36 +1,39 @@
 from django.db import models
 from django.utils.timezone import now
 
-
 # Create your models here.
 
 # <HINT> Create a Car Make model `class CarMake(models.Model)`:
 class CarMake(models.Model):
-    name = models.CharField(max_length=50)
-    desc = models.CharField(max_length=200)
+    name = models.CharField(null=False, max_length=50)
+    desc = models.CharField(max_length=1000)
 
     def __str__(self):
-        return 'name= ' + self.name + ', desc= ' + self.desc
+        return "Name: " + self.name + "," + \
+               "Description: " + self.desc
 
 
 # <HINT> Create a Car Model model `class CarModel(models.Model):`:
 class CarModel(models.Model):
-    
-    TYPE_CHOICES = (
-        ('SEDAN', "SEDAN"),
-        ('SUV', "SUV"),
-        ('WAGON', "WAGON"),
-        ('OTHER', "OTHER"),
-    )
-
+    SEDAN = 'sedan'
+    SUV = 'suv'
+    WAGON = 'wagon'
+    CAR_TYPES = [
+        (SEDAN, 'Sedan'),
+        (SUV, 'Suv'),
+        (WAGON, 'Wagon')
+    ]
     model_id = models.ForeignKey(CarMake, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    name = models.CharField(null=False, max_length=50)
     dealer_id = models.IntegerField()
-    car_type = models.CharField(max_length=10, choices=TYPE_CHOICES) 
+    car_type = models.CharField(max_length=50, choices=CAR_TYPES)
     year = models.DateField()
 
     def __str__(self):
-        return 'name=' + self.name
+        return "Name: " + self.name + "," + \
+                "Dealer ID: " + str(self.dealer_id) + "," + \
+                "Type: " + self.car_type + "," + \
+                "Year: " + str(self.year.year)
 
 # <HINT> Create a plain Python class `CarDealer` to hold dealer data
 class CarDealer:
@@ -60,16 +63,18 @@ class CarDealer:
 # <HINT> Create a plain Python class `DealerReview` to hold review data
 
 class DealerReview:
-    def __init__(self,dealership,name,purchase,review,purchase_date,car_make,car_model,car_year,sentiment):
-        self.dealership = dealership
-        self.name = name
-        self.purchase = purchase
-        self.review = review
-        self.purchase_date = purchase_date
-        self.car_make = car_make
-        self.car_model = car_model
-        self.car_year = car_year
-        self.sentiment = sentiment
+    def __init__(self, dealership, name, purchase, review, purchase_date, car_make, car_model, car_year,sentiment, id):
+        self.dealership=dealership
+        self.name=name
+        self.purchase=purchase
+        self.review=review
+        self.purchase_date=purchase_date
+        self.car_make=car_make
+        self.car_model=car_model
+        self.car_year=car_year
+        self.sentiment=sentiment #Watson NLU service
+        self.id=id
 
     def __str__(self):
-           return "Dealer name: " + self.name
+        return "Review: " + self.review +\
+        " Sentiment: " + self.sentiment

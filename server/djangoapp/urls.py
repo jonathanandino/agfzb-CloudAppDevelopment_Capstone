@@ -11,16 +11,13 @@ urlpatterns = [
 
     # path for about view
     path(route = 'about/', view = views.about, name='about'),
-
     # path for contact us view
     path(route = 'contact/', view = views.contact, name='contact'),
-
     # path for registration
     path('signup/', views.registration_request, name='registration'),
 
     # path for login
     path('login/', views.login_request, name='login'),
-
     # path for logout
     path('logout/', views.logout_request, name='logout'),
 
