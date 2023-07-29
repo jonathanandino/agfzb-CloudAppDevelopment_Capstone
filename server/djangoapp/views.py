@@ -115,23 +115,23 @@ def signup_request(request):
             user = User.objects.create_user(username=username, first_name=first_name,
                                             last_name=last_name,password=password)
             login(request, user)
-            return redirect('djangoappSCD:index')
+            return redirect('djangoapp:index')
 
         else:
-            resp =  redirect('djangoappSCD:register')
+            resp =  redirect('djangoapp:register')
             resp['Location'] += '?signin=exist'
             logout(request)
             return resp
 
     else:
-        return redirect('djangoappSCD:register')
+        return redirect('djangoapp:register')
 
 
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
     ctx = {}
     if request.method == "GET":
-        url = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/dat"
+        url = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/dealership"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
         # Concat all dealer's short name
@@ -145,7 +145,7 @@ def get_dealerships(request):
 # def get_dealer_details(request, dealer_id):
 def get_dealer_details(request, dealer_id):
     ctx = {}
-    url = "https://9d5eb47c-7f0d-4761-b898-39c4ab69ec9e-bluemix.cloudant.com/reviews/_all_docs"
+    url = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/review"
     # Get dealers from the URL
     reviews = get_dealer_reviews_from_cf(url,dealer_id)
     ctx['reviews'] = reviews
@@ -154,6 +154,7 @@ def get_dealer_details(request, dealer_id):
     dealer_details = ' '.join([dealer.review for dealer in reviews])
     # Return a list of dealer short name
     return render(request, 'djangoapp/dealer_details.html', ctx)
+    
 
 
 # Create a `add_review` view to submit a review
@@ -162,8 +163,8 @@ def add_review(request, dealer_id):
 
     if request.method == "POST":
         if request.user.is_authenticated:
-            url = "https://9d5eb47c-7f0d-4761-b898-39c4ab69ec9e-bluemix.cloudant.com/reviews/_all_docs"
-            url2 = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/dat"
+            url = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/review"
+            url2 = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/dealership"
 
             car = CarModel.objects.get(id=request.POST['car'])
             dealer = get_dealer_by_id(url2, dealer_id)
@@ -193,14 +194,14 @@ def add_review(request, dealer_id):
             ctx['dealer'] = dealer
             ctx['cars'] = list(CarModel.objects.all())
             ctx['created'] = True
-            return render(request, 'djangoappSCD/add_review.html', ctx)
+            return render(request, 'djangoapp/add_review.html', ctx)
 
         else:
             raise PermissionDenied("Only auth users can post.")
     else:
         ctx = {}
-        url = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/dat"
+        url = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/dealership"
         ctx['dealer'] = get_dealer_by_id(url, dealer_id)
         ctx['cars'] = list(CarModel.objects.all())
         print(ctx['cars'])
-        return render(request, 'djangoappSCD/add_review.html', ctx)
+        return render(request, 'djangoapp/add_review.html', ctx)
