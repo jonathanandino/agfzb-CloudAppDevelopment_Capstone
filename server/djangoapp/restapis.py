@@ -133,19 +133,33 @@ def get_dealer_reviews_from_cf(url,dealerId):
     results = []
     # Call get_request with a URL parameter
     json_result = get_request(url,dealerId=dealerId)
-
+    
     if json_result:
         # Get the row list in JSON as dealers
         reviews = json_result
         
         # For each dealer object
         for review in reviews:
-            sentiment = ""
-            review_obj = DealerReview(dealership=review["dealership"],name=review["name"],
-                                      purchase=review["purchase"],review=review["review"],
-                                      purchase_date=review["purchase_date"],car_make=review["car_make"],
-                                      car_model=review["car_model"],car_year=review["car_year"],
-                                      sentiment=sentiment)
+            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA______", review["doc"], "______________________________________________")
+            rev = review["doc"]
+            carMake = ""
+            purchaseDate = ""
+            carModel = ""
+            carYear = ""
+            sentiment = "positive"
+
+
+            if len(rev) == 11:
+                carMake= review["doc"]["car_make"]
+                purchaseDate =review["doc"]["purchase_date"]
+                carModel = review["doc"]["car_model"]
+                carYear= review["doc"]["car_year"]
+
+            review_obj = DealerReview(dealership=review["doc"]["dealership"],name=review["doc"]["name"],
+                                      purchase=review["doc"]["purchase"],review=review["doc"]["review"],
+                                      purchase_date=purchaseDate, car_make=carMake,
+                                      car_model=carModel,car_year=carYear,
+                                      sentiment=sentiment, id=review["doc"]["id"])
             results.append(review_obj)
     return results
 
@@ -153,6 +167,30 @@ def get_dealer_reviews_from_cf(url,dealerId):
 # def analyze_review_sentiments(text):
 # - Call get_request() with specified arguments
 # - Get the returned sentiment label such as Positive or Negative
+
+def analyze_review_sentiments(dealer_review):
+# - Call get_request() with specified arguments
+# - Get the returned sentiment label such as Positive or Negative
+    apikey = "uBgZvwi9DoLUKM_EPNXgw3-w5TuCWn5_yNQwSSW_X33g"
+    url = "https://9d5eb47c-7f0d-4761-b898-39c4ab69ec9e-bluemix.cloudantnosqldb.appdomain.cloud"
+    
+    authenticator = IAMAuthenticator(apikey)
+    natural_language_understanding = NaturalLanguageUnderstandingV1(
+        version='2022-04-07',
+        authenticator=authenticator
+    )
+
+    natural_language_understanding.set_service_url(url)
+
+    response = natural_language_understanding.analyze(
+        text=dealer_review,
+        language='en',
+        features=Features(sentiment=SentimentOptions(targets=[dealer_review]))
+    ).get_result()
+
+    print(json.dumps(response, indent=2))
+    
+    return response["sentiment"]["document"]["label"]
 
 
 

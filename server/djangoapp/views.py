@@ -143,6 +143,7 @@ def get_dealerships(request):
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
 # def get_dealer_details(request, dealer_id):
+
 def get_dealer_details(request, dealer_id):
     ctx = {}
     url = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/review"

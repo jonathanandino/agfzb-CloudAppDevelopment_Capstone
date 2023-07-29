@@ -10,38 +10,64 @@
     <body>
 
     <!--Add a nav bar here -->
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarsExample02">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/djangoapp/about" >About Us </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/djangoapp/contact">Contact Us</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ml-auto">
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" style="color: white;" href="#">{{ user.username }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-light" href="logout/">Logout</a>
+            </li>
+            {% else %}
+                <li>
+                        <a class="btn btn-primary"  href="/djangoapp/login/"> Login</a>
+                        <a class="btn btn-light"  href="/djangoapp/signup/">Sign Up</a>
+                </li>
+            {% endif %}
+        </ul>
+        </div>
+      </nav>
 
     <br>
+
     <!-- Add reviews as cards -->
-    <div class="container">
-        {% if user.is_authenticated %}
-          <a href="{% url 'djangoappSCD:addrev' dealer  %}">(Add a new review)</a>
-        {% endif %}
-        <br>
-        <div class="row">
+    <div class="container" >
+        <h1>Reviews for {{ dealer.full_name }}</h1>
 
-          {% for review in reviews %}
-          <div class="card col-md-3 m-1">
-            <div class="card-header">
+    <div class="card-columns">
+        {% for review in reviews %}
+            <div class="card" style="width: 18rem">
+                {% if review.sentiment == "positive" %}
+                <img width="80" class="float" src="{{ MEDIA_URL }}/emoji/positive.png"/>
+                {% elif review.sentiment == "neutral" %}
+                 <img class="card-img-left" src="{{ MEDIA_URL }}/emoji/neutral.png"/>
+                 {% else %}
+                 <img class="card-img-left" src="{{ MEDIA_URL }}/emoji/negative.png"/>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ review.car_make }}, {{ review.car_model }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ review.car_year }}</h6>
+                    <p class="card-text">{{ review.review }}</p>
+                </div>
             </div>
-            <div class="card-body">
-              <h5 class="card-title">{{ review.car_make }}, {{review.car_model }}</h5>
-              <h5 class="card-title">{{ review.car_year }}</h5>
-              <p>{{ review.review }}</p>
-            </div>
-          </div>
-          {% endfor %}
-
-          {% if not reviews %}
-            <div class="alert alert-warning w-100" role="alert">
-              No reviews for this dealer.
-            </div>
-          {% endif %}
-
-        </div>
-      </div>
-
-      </body>
+        {% endfor %}
+    </div>
+    </div>
     </body>
 
 </html>
