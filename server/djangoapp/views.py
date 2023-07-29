@@ -131,7 +131,7 @@ def signup_request(request):
 def get_dealerships(request):
     ctx = {}
     if request.method == "GET":
-        url = "https://9d5eb47c-7f0d-4761-b898-39c4ab69ec9e-bluemix.cloudant.com/dealerships/_all_docs"
+        url = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/dat"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
         # Concat all dealer's short name
@@ -139,7 +139,7 @@ def get_dealerships(request):
         # Return a list of dealer short name
 
         ctx['dealerships'] = dealerships
-        return render(request, 'djangoappSCD/index.html', ctx)
+        return render(request, 'djangoapp/index.html', ctx)
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
 # def get_dealer_details(request, dealer_id):
@@ -153,7 +153,7 @@ def get_dealer_details(request, dealer_id):
     # Concat all dealer's short name
     dealer_details = ' '.join([dealer.review for dealer in reviews])
     # Return a list of dealer short name
-    return render(request, 'djangoappSCD/dealer_details.html', ctx)
+    return render(request, 'djangoapp/dealer_details.html', ctx)
 
 
 # Create a `add_review` view to submit a review
@@ -163,7 +163,7 @@ def add_review(request, dealer_id):
     if request.method == "POST":
         if request.user.is_authenticated:
             url = "https://9d5eb47c-7f0d-4761-b898-39c4ab69ec9e-bluemix.cloudant.com/reviews/_all_docs"
-            url2 = "https://9d5eb47c-7f0d-4761-b898-39c4ab69ec9e-bluemix.cloudant.com/dealerships/_all_docs"
+            url2 = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/dat"
 
             car = CarModel.objects.get(id=request.POST['car'])
             dealer = get_dealer_by_id(url2, dealer_id)
@@ -199,7 +199,7 @@ def add_review(request, dealer_id):
             raise PermissionDenied("Only auth users can post.")
     else:
         ctx = {}
-        url = "https://9d5eb47c-7f0d-4761-b898-39c4ab69ec9e-bluemix.cloudant.com/dealerships/_all_docs"
+        url = "https://us-south.functions.appdomain.cloud/api/v1/web/907d01a1-1306-41ff-be28-7bdf9db71261/api/dat"
         ctx['dealer'] = get_dealer_by_id(url, dealer_id)
         ctx['cars'] = list(CarModel.objects.all())
         print(ctx['cars'])
